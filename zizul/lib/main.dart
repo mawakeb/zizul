@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,6 +7,22 @@ import 'database/database_helper.dart';
 import 'features/add/expense_add_screen.dart';
 import 'features/history/expense_history_screen.dart';
 import 'features/stats/stats_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'database/database_helper.dart';
+import 'models/category.dart';
+import 'models/category_stat.dart';
+import 'models/expense.dart';
+import 'models/payment_type.dart';
+import 'providers/category_providers.dart';
+import 'providers/date_providers.dart';
+import 'providers/expense_providers.dart';
+import 'providers/repository_providers.dart';
+import 'providers/settings_providers.dart';
+import 'repositories/expense_repository.dart';
+import 'repositories/stats_repository.dart';
+import 'utils/date_range_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
