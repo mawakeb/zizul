@@ -512,6 +512,103 @@ class _ExpenseHistoryScreenState extends ConsumerState<ExpenseHistoryScreen> {
           decoration: const InputDecoration(
             hintText: 'id,created_at,amount,category,payment_type,memo ...',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.list_alt_outlined),
+            selectedIcon: Icon(Icons.list_alt),
+            label: '내역',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.pie_chart_outline),
+            selectedIcon: Icon(Icons.pie_chart),
+            label: '통계',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ExpenseAddScreen extends StatelessWidget {
+  const _ExpenseAddScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _FeaturePlaceholder(
+      title: '지출 추가',
+      subtitle: '앱 기본 진입 화면',
+      description: '여기에 지출 입력 폼(날짜/카테고리/금액/메모/결제수단)이 들어갑니다.',
+      icon: Icons.add_card,
+    );
+  }
+}
+
+class _ExpenseHistoryScreen extends StatelessWidget {
+  const _ExpenseHistoryScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _FeaturePlaceholder(
+      title: '지출 내역',
+      subtitle: '월별 조회/검색/정렬/수정/삭제',
+      description: '여기에 월간 합계, 달력 탭, 내역 리스트가 들어갑니다.',
+      icon: Icons.list_alt,
+    );
+  }
+}
+
+class _StatsScreen extends StatelessWidget {
+  const _StatsScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const _FeaturePlaceholder(
+      title: '통계',
+      subtitle: '카테고리별 통계/목표 대비 소비 페이스',
+      description: '여기에 파이 차트 및 목표 대비 분석 UI가 들어갑니다.',
+      icon: Icons.pie_chart,
+    );
+  }
+}
+
+class _FeaturePlaceholder extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String description;
+  final IconData icon;
+
+  const _FeaturePlaceholder({
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 54),
+            const SizedBox(height: 16),
+            Text(title, style: textTheme.headlineSmall),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: textTheme.bodyMedium,
+            ),
+          ],
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
