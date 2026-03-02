@@ -6,6 +6,7 @@ import 'database/database_helper.dart';
 import 'features/add/expense_add_screen.dart';
 import 'features/history/expense_history_screen.dart';
 import 'features/stats/stats_screen.dart';
+import 'features/settings/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,7 @@ class _ZizulRootShellState extends State<ZizulRootShell> {
       const ExpenseAddScreen(),
       const ExpenseHistoryScreen(),
       const StatsScreen(),
+      const SettingsScreen(),
     ];
 
     return Scaffold(
@@ -63,6 +65,7 @@ class _ZizulRootShellState extends State<ZizulRootShell> {
           NavigationDestination(icon: Icon(Icons.add_card), label: '추가'),
           NavigationDestination(icon: Icon(Icons.list_alt), label: '내역'),
           NavigationDestination(icon: Icon(Icons.pie_chart), label: '통계'),
+          NavigationDestination(icon: Icon(Icons.settings), label: '설정'),
         ],
       ),
     );
