@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 
 class DatabaseHelper {
   static const _dbName = 'zizul.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
 
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
@@ -28,6 +28,7 @@ class DatabaseHelper {
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -57,7 +58,10 @@ class DatabaseHelper {
       CREATE TABLE settings (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         monthly_goal INTEGER NOT NULL DEFAULT 0,
-        weekly_goal INTEGER NOT NULL DEFAULT 0
+        weekly_goal INTEGER NOT NULL DEFAULT 0,
+        daily_notification_enabled INTEGER NOT NULL DEFAULT 0,
+        daily_notification_hour INTEGER NOT NULL DEFAULT 8,
+        daily_notification_minute INTEGER NOT NULL DEFAULT 0
       )
     ''');
 
@@ -68,17 +72,26 @@ class DatabaseHelper {
     await db.execute('CREATE INDEX idx_expense_payment ON expense(payment_type)');
   }
 
-  /* =========================
-      EXPENSE
-  ========================= */
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        'ALTER TABLE settings ADD COLUMN daily_notification_enabled INTEGER NOT NULL DEFAULT 0',
+      );
+      await db.execute(
+        'ALTER TABLE settings ADD COLUMN daily_notification_hour INTEGER NOT NULL DEFAULT 8',
+      );
+      await db.execute(
+        'ALTER TABLE settings ADD COLUMN daily_notification_minute INTEGER NOT NULL DEFAULT 0',
+      );
+    }
+  }
 
   Future<int> insertExpense(Map<String, dynamic> data) async {
     final db = await instance.database;
     return await db.insert('expense', data);
   }
 
-  Future<List<Map<String, dynamic>>> getExpensesBetween(
-      int start, int end) async {
+  Future<List<Map<String, dynamic>>> getExpensesBetween(int start, int end) async {
     final db = await instance.database;
     return await db.query(
       'expense',
@@ -119,6 +132,8 @@ class DatabaseHelper {
   }
 
   Future<int> deleteMultipleExpenses(List<int> ids) async {
+    if (ids.isEmpty) return 0;
+
     final db = await instance.database;
     return await db.delete(
       'expense',
@@ -126,10 +141,6 @@ class DatabaseHelper {
       whereArgs: ids,
     );
   }
-
-  /* =========================
-      CATEGORY
-  ========================= */
 
   Future<int> insertCategory(Map<String, dynamic> data) async {
     final db = await instance.database;
@@ -169,14 +180,9 @@ class DatabaseHelper {
     );
   }
 
-  /* =========================
-      SETTINGS
-  ========================= */
-
   Future<Map<String, dynamic>> getSettings() async {
     final db = await instance.database;
-    final result =
-        await db.query('settings', where: 'id = 1', limit: 1);
+    final result = await db.query('settings', where: 'id = 1', limit: 1);
     return result.first;
   }
 
@@ -192,12 +198,24 @@ class DatabaseHelper {
     );
   }
 
-  /* =========================
-      STATISTICS
-  ========================= */
+  Future<int> updateDailyNotification({
+    required bool enabled,
+    required int hour,
+    required int minute,
+  }) async {
+    final db = await instance.database;
+    return await db.update(
+      'settings',
+      {
+        'daily_notification_enabled': enabled ? 1 : 0,
+        'daily_notification_hour': hour,
+        'daily_notification_minute': minute,
+      },
+      where: 'id = 1',
+    );
+  }
 
-  Future<List<Map<String, dynamic>>> getCategoryStats(
-      int start, int end) async {
+  Future<List<Map<String, dynamic>>> getCategoryStats(int start, int end) async {
     final db = await instance.database;
     return await db.rawQuery('''
       SELECT category_id, SUM(amount) as total
@@ -206,10 +224,6 @@ class DatabaseHelper {
       GROUP BY category_id
     ''', [start, end]);
   }
-
-  /* =========================
-      CSV EXPORT
-  ========================= */
 
   Future<List<Map<String, dynamic>>> exportAllExpenses() async {
     final db = await instance.database;
@@ -226,10 +240,6 @@ class DatabaseHelper {
       ORDER BY e.created_at DESC
     ''');
   }
-
-  /* =========================
-      CLOSE
-  ========================= */
 
   Future close() async {
     final db = await instance.database;

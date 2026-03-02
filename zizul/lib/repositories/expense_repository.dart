@@ -1,5 +1,6 @@
 import '../database/database_helper.dart';
 import '../models/expense.dart';
+import '../models/expense_export.dart';
 import '../utils/date_range_util.dart';
 
 class ExpenseRepository {
@@ -11,16 +12,29 @@ class ExpenseRepository {
 
   Future<List<Expense>> getMonthlyExpenses(DateTime date) async {
     final range = DateRangeUtil.monthRange(date);
-    final result =
-        await _db.getExpensesBetween(range.start, range.end);
+    final result = await _db.getExpensesBetween(range.start, range.end);
+    return result.map((e) => Expense.fromMap(e)).toList();
+  }
+
+  Future<List<Expense>> getExpensesInRange(DateRange range) async {
+    final result = await _db.getExpensesBetween(range.start, range.end);
     return result.map((e) => Expense.fromMap(e)).toList();
   }
 
   Future<int> getMonthlyTotal(DateTime date) async {
     final range = DateRangeUtil.monthRange(date);
-    final total =
-        await _db.getTotalBetween(range.start, range.end);
+    final total = await _db.getTotalBetween(range.start, range.end);
     return total ?? 0;
+  }
+
+  Future<int> getTotalInRange(DateRange range) async {
+    final total = await _db.getTotalBetween(range.start, range.end);
+    return total ?? 0;
+  }
+
+  Future<List<ExpenseExport>> exportAllExpenses() async {
+    final result = await _db.exportAllExpenses();
+    return result.map((e) => ExpenseExport.fromMap(e)).toList();
   }
 
   Future<void> updateExpense(Expense expense) async {
