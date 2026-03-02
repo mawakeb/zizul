@@ -14,13 +14,18 @@ import 'providers/date_providers.dart';
 import 'providers/expense_providers.dart';
 import 'providers/repository_providers.dart';
 import 'providers/settings_providers.dart';
+import 'repositories/expense_repository.dart';
 import 'repositories/stats_repository.dart';
 import 'utils/date_range_util.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DatabaseHelper.instance.database;
-  runApp(const ProviderScope(child: ZizulApp()));
+  runApp(
+    const ProviderScope(
+      child: ZizulApp(),
+    ),
+  );
 }
 
 class ZizulApp extends StatelessWidget {
