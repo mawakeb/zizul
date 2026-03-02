@@ -23,12 +23,12 @@ class CategoryNotifier extends AsyncNotifier<List<Category>> {
     await refresh();
   }
 
-  Future<void> update(Category category) async {
+  Future<void> updateCategory(Category category) async {
     await _repo.update(category);
     await refresh();
   }
 
-  Future<void> delete(int id) async {
+  Future<void> deleteCategory(int id) async {
     await _repo.delete(id);
     await refresh();
   }
